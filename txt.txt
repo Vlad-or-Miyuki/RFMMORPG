@@ -1,0 +1,163 @@
+const fs = require('fs');
+const readline = require('readline').createInterface({
+    input: process.stdin,
+    output: process.stdout,
+});
+
+const characterDataPath = 'characterData.json';
+const craftRecipesPath = 'craftRecipes.json';
+
+
+function readJsonFile(path) {
+    try {
+        const data = fs.readFileSync(path, 'utf8');
+        return JSON.parse(data);
+    } catch (err) {
+        console.error('Ошибка чтения файла:', err);
+        process.exit(1);
+    }
+}
+
+function writeJsonFile(path, data) {
+    try {
+        fs.writeFileSync(path, JSON.stringify(data, null, 2));
+        console.log('Данные сохранены.');
+    } catch (err) {
+        console.error('Ошибка записи файла:', err);
+        process.exit(1);
+    }
+}
+
+
+function readCharacterData() {
+    return readJsonFile(characterDataPath);
+}
+
+function writeCharacterData(data) {
+    writeJsonFile(characterDataPath, data);
+}
+
+function readCraftRecipes() {
+    return readJsonFile(craftRecipesPath);
+}
+
+function addItem(item) {
+    const characterData = readCharacterData();
+    characterData.inventory.push(item);
+    writeCharacterData(characterData);
+}
+
+function heal(amount){
+    const characterData = readCharacterData();
+    characterData.hp += amount;
+    if(characterData.hp < 0) characterData.hp = 0;
+    writeCharacterData(characterData);
+}
+
+function damage(amount){
+    const characterData = readCharacterData();
+    characterData.hp -= amount;
+    if(characterData.hp < 0) characterData.hp = 0;
+    writeCharacterData(characterData);
+}
+
+function removeItem(item) {
+    const characterData = readCharacterData();
+    const index = characterData.inventory.indexOf(item);
+    if (index > -1) {
+        characterData.inventory.splice(index, 1);
+        writeCharacterData(characterData);
+        console.log(`Предмет "${item}" удален по какой либо причине.`);
+    } else {
+        console.log(`Предмет "${item}" не найден в инвентаре.`);
+    }
+}
+
+function addMoney(amount) {
+    const characterData = readCharacterData();
+    characterData.money += parseInt(amount);
+    writeCharacterData(characterData);
+    console.log(`Добавлено ${amount} денег.`);
+}
+
+function displayData() {
+    const characterData = readCharacterData();
+    console.log('Данные персонажа:');
+    console.log(characterData);
+}
+
+function craftItem(recipeName) {
+    const characterData = readCharacterData();
+    const recipes = readCraftRecipes().recipes;
+    const recipe = recipes.find(r => r.name === recipeName);
+
+    if (!recipe) {
+        console.log(`Рецепт "${recipeName}" не найден.`); // Fixed quotes
+        return;
+    }
+
+    // Проверка наличия ингредиентов
+    for (const ingredient in recipe.ingredients) {
+        const count = recipe.ingredients[ingredient];
+        const inventoryCount = characterData.inventory.filter(item => item === ingredient).length;
+        if (inventoryCount < count) {
+            console.log(`Недостаточно ингредиента "${ingredient}". Требуется ${count}, есть ${inventoryCount}.`);
+            return;
+        }
+    }
+
+    // Удаление ингредиентов из инвентаря.
+    for (const ingredient in recipe.ingredients) {
+        const count = recipe.ingredients[ingredient];
+        for (let i = 0; i < count; i++) {
+            const index = characterData.inventory.indexOf(ingredient);
+            if (index > -1) {
+                characterData.inventory.splice(index, 1);
+            }
+        }
+    }
+
+    // Добавление результата в инвентарь
+    addItem(recipe.result);
+    writeCharacterData(characterData);
+}
+
+let change = () => {
+    readline.question('Введите команду для изменения данных (add, heal, damage, remove, display, craft, addMoney, exit): ', (command) => {
+        switch (command) {
+            case 'add':
+                readline.question('Введите название предмета: ', (item) => addItem(item));
+                break;
+            case 'heal':
+                readline.question('Введите сколько добавить HP: ', (amount) => heal(parseInt(amount)));
+                break;
+            case 'damage':
+                readline.question('Введите сколько нанести урона: ', (amount) => damage(parseInt(amount)));
+                break;
+            case 'remove':
+                readline.question('Введите название предмета для удаления: ', (item) => removeItem(item));
+                break;
+            case 'addMoney':
+                readline.question('Введите количество денег для добавления: ', (amount) => addMoney(amount));
+                break;
+            case 'display':
+                displayData();
+                break;
+            case 'craft':
+                    readline.question('Введите название предмета для крафта: ', (recipeName) => craftItem(recipeName));
+                    break;
+            case 'exit':
+                readline.close();
+                break;
+            default:
+                console.log('Неизвестная команда.');
+        }
+    });
+    
+    readline.on('close', () => {
+        console.log('Программа завершена.');
+        process.exit(0);
+    });
+}
+
+change()

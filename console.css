@@ -1,0 +1,74 @@
+body {
+  font-family: monospace;
+  background-color: #222;
+  color: #eee;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;     /* Center vertically */
+}
+
+.console {
+  background-color: #333;
+  border: 2px solid #555;
+  border-radius: 5px;
+  padding: 10px;
+  width: 1000px; /* Increased width */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  min-height: 600px; /* Increased minimum height */
+  max-height: 900px; /* Increased maximum height */
+  overflow: auto;    /* Better scrolling behavior */
+}
+
+.console-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.console-header h1 {
+  margin: 0;
+}
+
+.console-body {
+  flex-grow: 1; /* Allow body to take up available space */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 5px;
+  background-color: #444;
+  border: 1px solid #555;
+  border-radius: 3px;
+}
+
+.console-body p {
+  margin: 2px 0;
+  white-space: pre-wrap; /* Preserve whitespace and allow line breaks */
+}
+
+.console-input {
+  display: flex;
+  gap: 5px;
+}
+
+.console-input input {
+    flex-grow: 1; /* input field takes available width */
+    padding: 5px;
+    background-color: #444;
+    color: #eee;
+    border: 1px solid #555;
+    border-radius: 3px;
+}
+
+#clearButton {
+  background-color: #555;
+  color: #eee;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#clearButton:hover {
+  background-color: #777;
+}

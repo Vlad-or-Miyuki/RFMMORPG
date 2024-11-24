@@ -1,0 +1,12 @@
+{
+  "hp": 100,
+  "inventory": [
+    {
+      "name": "меч новичка"
+    }
+  ],
+  "resources": {
+    "materia": 8
+  },
+  "money": 0
+}

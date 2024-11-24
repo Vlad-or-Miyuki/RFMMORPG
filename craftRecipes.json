@@ -1,0 +1,18 @@
+{
+    "recipes": [
+      {
+        "name": "зелье здоровья",
+        "ingredients": {
+          "materia": 3
+        },
+        "result": "зелье здоровья"
+      },
+      {
+        "name": "меч новичка",
+        "ingredients": {
+          "materia": 8
+        },
+        "result": "меч новичка"
+      }
+    ]
+  }
